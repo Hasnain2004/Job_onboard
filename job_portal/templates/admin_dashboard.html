@@ -1,0 +1,141 @@
+{% extends 'base.html' %} {% block title %}Admin Dashboard - Job Portal{%
+endblock %} {% block content %}
+<div class="admin-dashboard">
+  <h2>Admin Dashboard</h2>
+
+  <div class="dashboard-stats">
+    <div class="stat-card">
+      <h3>Total Jobs</h3>
+      <p class="stat-number">{{ jobs_count }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Total Applications</h3>
+      <p class="stat-number">{{ applications_count }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Active Users</h3>
+      <p class="stat-number">{{ users_count }}</p>
+    </div>
+    <div class="stat-card">
+      <h3>Support Tickets</h3>
+      <p class="stat-number">{{ support_tickets_count }}</p>
+    </div>
+  </div>
+
+  <div class="dashboard-actions">
+    <a href="{% url 'create_job' %}" class="btn primary-btn">Create New Job</a>
+    <a href="{% url 'manage_applications' %}" class="btn secondary-btn"
+      >Manage Applications</a
+    >
+    <a href="{% url 'support_tickets' %}" class="btn secondary-btn"
+      >View Support Tickets</a
+    >
+  </div>
+
+  <div class="dashboard-section">
+    <h3>Recent Jobs</h3>
+    <div class="table-responsive">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Location</th>
+            <th>Posted Date</th>
+            <th>Applications</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for job in recent_jobs %}
+          <tr>
+            <td>{{ job.title }}</td>
+            <td>{{ job.location }}</td>
+            <td>{{ job.created_at|date:"M d, Y" }}</td>
+            <td>{{ job.applications.count }}</td>
+            <td class="actions">
+              <a href="{% url 'edit_job' job.id %}" class="action-btn edit"
+                >Edit</a
+              >
+              <a
+                href="{% url 'job_applications' job.id %}"
+                class="action-btn view"
+                >View Applications</a
+              >
+              <form
+                method="post"
+                action="{% url 'delete_job' job.id %}"
+                class="inline-form"
+              >
+                {% csrf_token %}
+                <button type="submit" class="action-btn delete">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5">No jobs posted yet.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if recent_jobs %}
+    <div class="view-all">
+      <a href="{% url 'manage_jobs' %}">View All Jobs</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="dashboard-section">
+    <h3>Recent Applications</h3>
+    <div class="table-responsive">
+      <table class="dashboard-table">
+        <thead>
+          <tr>
+            <th>Applicant</th>
+            <th>Job</th>
+            <th>Date Applied</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for application in recent_applications %}
+          <tr>
+            <td>{{ application.applicant_name }}</td>
+            <td>{{ application.job.title }}</td>
+            <td>{{ application.applied_at|date:"M d, Y" }}</td>
+            <td>
+              <span class="status-badge status-{{ application.status }}"
+                >{{ application.get_status_display }}</span
+              >
+            </td>
+            <td class="actions">
+              <a
+                href="{% url 'application_detail' application.id %}"
+                class="action-btn view"
+                >View</a
+              >
+              <a
+                href="{% url 'update_application_status' application.id %}"
+                class="action-btn edit"
+                >Update Status</a
+              >
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5">No applications received yet.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% if recent_applications %}
+    <div class="view-all">
+      <a href="{% url 'manage_applications' %}">View All Applications</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %} {% block extra_css %} {% endblock %}

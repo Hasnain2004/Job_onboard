@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Job Portal{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+    {% if user.is_authenticated %}
+    <nav class="navbar">
+      <div class="nav-brand">
+        <i class="fas fa-briefcase"></i>
+        Job Portal
+      </div>
+      <div class="nav-search">
+        <div class="search-form">
+          <input type="text" id="searchBar" placeholder="Search for jobs..." {% if request.GET.search %}value="{{ request.GET.search }}"{% endif %}>
+          <button onclick="window.location.href='{% url 'job_list' %}?search=' + document.getElementById('searchBar').value">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+      <div class="nav-items">
+        <a href="{% url 'job_list' %}" {% if request.path == '/' %}class="active"{% endif %}>
+          <i class="fas fa-home"></i> Jobs
+        </a>
+        <a href="{% url 'my_applications' %}" {% if request.path == '/my-applications/' %}class="active"{% endif %}>
+          <i class="fas fa-bookmark"></i> My Applications
+        </a>
+        <a href="{% url 'contact_support' %}" {% if request.path == '/contact/' %}class="active"{% endif %}>
+          <i class="fas fa-envelope"></i> Contact
+        </a>
+        {% if user.role == 'admin' %}
+        <a href="/admin/" class="admin-btn">
+          <i class="fas fa-user-shield"></i> Admin
+        </a>
+        {% endif %}
+        <a href="{% url 'logout' %}" class="logout-btn">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+      </div>
+    </nav>
+    {% endif %}
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+
+    <footer class="site-footer">
+      <div class="footer-bottom">
+        <p>&copy; {% now "Y" %} Job Portal. All rights reserved.</p>
+      </div>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

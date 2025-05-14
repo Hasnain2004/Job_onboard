@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+<!-- title -->
+{% block title %}Apply for {{ job.title }} - Job Portal{% endblock %}
+<!-- content -->
+{% block content %}
+<div class="application-container">
+  <form method="post" enctype="multipart/form-data" class="application-form">
+    {% csrf_token %}
+    <h2>Apply for {{ job.title }}</h2>
+
+    {% if form.errors %}
+    <div class="message error">
+      {% for field, errors in form.errors.items %} {% for error in errors %}
+      <p>{{ error }}</p>
+      {% endfor %} {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="form-group">
+      <label for="id_applicant_name">Your Name</label>
+      {{ form.applicant_name }} {% if form.applicant_name.errors %}
+      <div class="field-error">{{ form.applicant_name.errors.0 }}</div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <label for="id_applicant_email">Your Email</label>
+      {{ form.applicant_email }} {% if form.applicant_email.errors %}
+      <div class="field-error">{{ form.applicant_email.errors.0 }}</div>
+      {% endif %}
+    </div>
+
+    <div class="form-group">
+      <label for="id_cv_path">Upload CV/Resume</label>
+      {{ form.cv_path }} {% if form.cv_path.errors %}
+      <div class="field-error">{{ form.cv_path.errors.0 }}</div>
+      {% endif %}
+      <small>Allowed formats: PDF, DOC, DOCX</small>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="submit-btn">Submit Application</button>
+      <a href="{% url 'job_detail' job.id %}" class="cancel-btn">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
