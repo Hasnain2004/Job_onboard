@@ -20,6 +20,11 @@ def signup_view(request):
     else:
         form = SignupForm()
     return render(request, 'signup.html', {'form': form})
+def login_view(request):
+    if request.user.is_authenticated:
+        return render(request, 'login.html')
+    return render(request, 'login.html')
+
 
 def login_view(request):
     if request.user.is_authenticated:

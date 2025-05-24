@@ -35,6 +35,17 @@
           </div>
         {% endif %}
         <button type="submit" class="submit-btn">Login</button>
+        <div class="social-container">
+          <button class="google-btn">
+            <a href="{% url 'social:begin' 'google-oauth2' %}">
+              <img src="https://www.google.com/favicon.ico"
+                   alt="Google"
+                   width="16"
+                   height="16">
+              Sign in with Google
+            </a>
+          </button>
+        </div>
       </form>
       <div class="signup-section">
         <p>Don't have an account?</p>

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from . import views
 
 urlpatterns = [
@@ -12,4 +12,5 @@ urlpatterns = [
     path('my-applications/<int:application_id>/withdraw/', views.withdraw_application, name='withdraw_application'),
     path('api/applications/<int:application_id>/', views.application_details_api, name='application_details_api'),
     path('contact/', views.contact_support, name='contact_support'),
+    path('social-auth/', include('social_django.urls', namespace='social')),
 ] 
