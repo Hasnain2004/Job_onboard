@@ -1,139 +1,155 @@
 {% extends 'base.html' %}
-
 {% block title %}Applications for {{ job.title }} - Job Portal{% endblock %}
-
 {% block content %}
-<div class="admin-container">
-  <div class="admin-header">
-    <h2>Applications for "{{ job.title }}"</h2>
-    <div class="job-info">
-      <span class="job-location">{{ job.location }}</span>
-      <span class="job-date">Posted on {{ job.created_at|date:"M d, Y" }}</span>
+  <div class="admin-container">
+    <div class="admin-header">
+      <h2>Applications for "{{ job.title }}"</h2>
+      <div class="job-info">
+        <span class="job-location">{{ job.location }}</span>
+        <span class="job-date">Posted on {{ job.created_at|date:"M d, Y" }}</span>
+      </div>
     </div>
-  </div>
-  
-  <div class="filter-container">
-    <form method="get" class="filter-form">
-      <div class="filter-group">
-        <label for="status">Filter by status:</label>
-        <select name="status" id="status" onchange="this.form.submit()">
-          <option value="" {% if not request.GET.status %}selected{% endif %}>All statuses</option>
-          <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
-          <option value="reviewing" {% if request.GET.status == 'reviewing' %}selected{% endif %}>Reviewing</option>
-          <option value="accepted" {% if request.GET.status == 'accepted' %}selected{% endif %}>Accepted</option>
-          <option value="rejected" {% if request.GET.status == 'rejected' %}selected{% endif %}>Rejected</option>
-        </select>
+    <div class="filter-container">
+      <form method="get" class="filter-form">
+        <div class="filter-group">
+          <label for="status">Filter by status:</label>
+          <select name="status" id="status" onchange="this.form.submit()">
+            <option value="" {% if not request.GET.status %}selected{% endif %}>All statuses</option>
+            <option value="pending"
+                    {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+            <option value="reviewing"
+                    {% if request.GET.status == 'reviewing' %}selected{% endif %}>Reviewing</option>
+            <option value="accepted"
+                    {% if request.GET.status == 'accepted' %}selected{% endif %}>Accepted</option>
+            <option value="rejected"
+                    {% if request.GET.status == 'rejected' %}selected{% endif %}>Rejected</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="sort">Sort by:</label>
+          <select name="sort" id="sort" onchange="this.form.submit()">
+            <option value="newest"
+                    {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest First</option>
+            <option value="oldest"
+                    {% if request.GET.sort == 'oldest' %}selected{% endif %}>Oldest First</option>
+            <option value="name_asc"
+                    {% if request.GET.sort == 'name_asc' %}selected{% endif %}>Name (A-Z)</option>
+            <option value="name_desc"
+                    {% if request.GET.sort == 'name_desc' %}selected{% endif %}>Name (Z-A)</option>
+          </select>
+        </div>
+      </form>
+    </div>
+    {% if applications %}
+      <div class="applications-grid">
+        {% for application in applications %}
+          <div class="application-card">
+            <div class="application-header">
+              <h3>{{ application.applicant_name }}</h3>
+              <span class="status-badge status-{{ application.status }}">{{ application.get_status_display }}</span>
+            </div>
+            <div class="application-info">
+              <p class="info-item">
+                <strong>Email:</strong> {{ application.applicant_email }}
+              </p>
+              <p class="info-item">
+                <strong>Applied on:</strong> {{ application.applied_at|date:"M d, Y" }}
+              </p>
+              <p class="info-item">
+                <strong>CV/Resume:</strong> <a href="{{ application.cv_path.url }}"
+    target="_blank"
+    class="file-link">Download</a>
+              </p>
+            </div>
+            {% if application.notes %}
+              <div class="application-notes">
+                <h4>Notes</h4>
+                <p>{{ application.notes }}</p>
+              </div>
+            {% endif %}
+            <div class="application-actions">
+              <a href="{% url 'application_detail' application.id %}"
+                 class="action-btn view">View Details</a>
+              <button class="action-btn update-status"
+                      data-application-id="{{ application.id }}">Update Status</button>
+            </div>
+          </div>
+        {% endfor %}
       </div>
-      
-      <div class="filter-group">
-        <label for="sort">Sort by:</label>
-        <select name="sort" id="sort" onchange="this.form.submit()">
-          <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>Newest First</option>
-          <option value="oldest" {% if request.GET.sort == 'oldest' %}selected{% endif %}>Oldest First</option>
-          <option value="name_asc" {% if request.GET.sort == 'name_asc' %}selected{% endif %}>Name (A-Z)</option>
-          <option value="name_desc" {% if request.GET.sort == 'name_desc' %}selected{% endif %}>Name (Z-A)</option>
-        </select>
-      </div>
-    </form>
-  </div>
-  
-  {% if applications %}
-  <div class="applications-grid">
-    {% for application in applications %}
-    <div class="application-card">
-      <div class="application-header">
-        <h3>{{ application.applicant_name }}</h3>
-        <span class="status-badge status-{{ application.status }}">{{ application.get_status_display }}</span>
-      </div>
-      <div class="application-info">
-        <p class="info-item"><strong>Email:</strong> {{ application.applicant_email }}</p>
-        <p class="info-item"><strong>Applied on:</strong> {{ application.applied_at|date:"M d, Y" }}</p>
-        <p class="info-item"><strong>CV/Resume:</strong> <a href="{{ application.cv_path.url }}" target="_blank" class="file-link">Download</a></p>
-      </div>
-      {% if application.notes %}
-      <div class="application-notes">
-        <h4>Notes</h4>
-        <p>{{ application.notes }}</p>
-      </div>
+      {% if applications.paginator.num_pages > 1 %}
+        <div class="pagination">
+          <div class="pagination-info">
+            Showing {{ applications.start_index }} to {{ applications.end_index }} of {{ applications.paginator.count }} applications
+          </div>
+          <div class="pagination-links">
+            {% if applications.has_previous %}
+              <a href="?page=1{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+                 class="pagination-btn">« First</a>
+              <a href="?page={{ applications.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+                 class="pagination-btn">Previous</a>
+            {% endif %}
+            <span class="current-page">Page {{ applications.number }} of {{ applications.paginator.num_pages }}</span>
+            {% if applications.has_next %}
+              <a href="?page={{ applications.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+                 class="pagination-btn">Next</a>
+              <a href="?page={{ applications.paginator.num_pages }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}"
+                 class="pagination-btn">Last »</a>
+            {% endif %}
+          </div>
+        </div>
       {% endif %}
-      <div class="application-actions">
-        <a href="{% url 'application_detail' application.id %}" class="action-btn view">View Details</a>
-        <button class="action-btn update-status" data-application-id="{{ application.id }}">Update Status</button>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-state-icon">📄</div>
+        <h3>No applications found</h3>
+        <p>
+          {% if request.GET.status %}
+            No applications with the selected status.
+          {% else %}
+            There are no applications for this job yet.
+          {% endif %}
+        </p>
       </div>
-    </div>
-    {% endfor %}
-  </div>
-  
-  {% if applications.paginator.num_pages > 1 %}
-  <div class="pagination">
-    <div class="pagination-info">
-      Showing {{ applications.start_index }} to {{ applications.end_index }} of {{ applications.paginator.count }} applications
-    </div>
-    <div class="pagination-links">
-      {% if applications.has_previous %}
-        <a href="?page=1{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="pagination-btn">&laquo; First</a>
-        <a href="?page={{ applications.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="pagination-btn">Previous</a>
-      {% endif %}
-      
-      <span class="current-page">
-        Page {{ applications.number }} of {{ applications.paginator.num_pages }}
-      </span>
-      
-      {% if applications.has_next %}
-        <a href="?page={{ applications.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="pagination-btn">Next</a>
-        <a href="?page={{ applications.paginator.num_pages }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="pagination-btn">Last &raquo;</a>
-      {% endif %}
+    {% endif %}
+    <div class="admin-footer">
+      <a href="{% url 'manage_jobs' %}" class="back-link">← Back to Jobs</a>
     </div>
   </div>
-  {% endif %}
-  
-  {% else %}
-  <div class="empty-state">
-    <div class="empty-state-icon">📄</div>
-    <h3>No applications found</h3>
-    <p>{% if request.GET.status %}No applications with the selected status.{% else %}There are no applications for this job yet.{% endif %}</p>
+  <!-- Update Status Modal -->
+  <div id="updateStatusModal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">×</span>
+      <h3>Update Application Status</h3>
+      <form id="updateStatusForm" method="post" action="">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="status_select">Status</label>
+          <select id="status_select" name="status" class="form-input">
+            <option value="pending">Pending</option>
+            <option value="reviewing">Reviewing</option>
+            <option value="accepted">Accepted</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="notes_textarea">Notes (optional)</label>
+          <textarea id="notes_textarea"
+                    name="notes"
+                    rows="4"
+                    class="form-input"
+                    placeholder="Add notes about this application..."></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn primary-btn">Update</button>
+          <button type="button" class="btn secondary-btn cancel-btn">Cancel</button>
+        </div>
+      </form>
+    </div>
   </div>
-  {% endif %}
-  
-  <div class="admin-footer">
-    <a href="{% url 'manage_jobs' %}" class="back-link">&larr; Back to Jobs</a>
-  </div>
-</div>
-
-<!-- Update Status Modal -->
-<div id="updateStatusModal" class="modal">
-  <div class="modal-content">
-    <span class="close-modal">&times;</span>
-    <h3>Update Application Status</h3>
-    <form id="updateStatusForm" method="post" action="">
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="status_select">Status</label>
-        <select id="status_select" name="status" class="form-input">
-          <option value="pending">Pending</option>
-          <option value="reviewing">Reviewing</option>
-          <option value="accepted">Accepted</option>
-          <option value="rejected">Rejected</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="notes_textarea">Notes (optional)</label>
-        <textarea id="notes_textarea" name="notes" rows="4" class="form-input" placeholder="Add notes about this application..."></textarea>
-      </div>
-      <div class="form-actions">
-        <button type="submit" class="btn primary-btn">Update</button>
-        <button type="button" class="btn secondary-btn cancel-btn">Cancel</button>
-      </div>
-    </form>
-  </div>
-</div>
 {% endblock %}
-
-{% block extra_css %}
-{% endblock %}
-
+{% block extra_css %}{% endblock %}
 {% block extra_js %}
-<script>
+  <script>
   document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('updateStatusModal');
     const updateStatusButtons = document.querySelectorAll('.update-status');
@@ -165,5 +181,5 @@
       }
     });
   });
-</script>
-{% endblock %} 
+  </script>
+{% endblock %}

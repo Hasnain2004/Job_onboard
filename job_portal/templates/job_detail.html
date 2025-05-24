@@ -1,24 +1,22 @@
 {% extends 'base.html' %}
-
 <!-- title -->
 {% block title %}{{ job.title }} - Job Portal{% endblock %}
-
 <!-- content -->
 {% block content %}
-<div class="job-detail-container">
-  <div class="job-detail">
-    <h2>{{ job.title }}</h2>
-    <p class="location"><strong>Location:</strong> {{ job.location }}</p>
-    <div class="description">
-      <h3>Job Description</h3>
-      <p>{{ job.description }}</p>
-    </div>
-    <div class="job-actions">
-      <a href="{% url 'apply_job' job.id %}" class="apply-btn"
-        >Apply for this Job</a
-      >
-      <a href="{% url 'job_list' %}" class="back-btn">Back to Job Listings</a>
+  <div class="job-detail-container">
+    <div class="job-detail">
+      <h2>{{ job.title }}</h2>
+      <p class="location">
+        <strong>Location:</strong> {{ job.location }}
+      </p>
+      <div class="description">
+        <h3>Job Description</h3>
+        <p>{{ job.description }}</p>
+      </div>
+      <div class="job-actions">
+        <a href="{% url 'apply_job' job.id %}" class="apply-btn">Apply for this Job</a>
+        <a href="{% url 'job_list' %}" class="back-btn">Back to Job Listings</a>
+      </div>
     </div>
   </div>
-</div>
 {% endblock %}

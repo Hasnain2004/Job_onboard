@@ -1,67 +1,53 @@
 {% extends 'base.html' %}
-
 <!-- title -->
 {% block title %}Sign Up - Job Portal{% endblock %}
-
 <!-- content -->
 {% block content %}
-<div class="auth-container">
-  <form method="post" id="signupForm" class="auth-form">
-    {% csrf_token %}
-    <h2>Sign Up</h2>
-
-    {% if form.errors %}
-    <div class="message error">
-      {% for field, errors in form.errors.items %} {% for error in errors %}
-      <p>{{ error }}</p>
-      {% endfor %} {% endfor %}
-    </div>
-    {% endif %}
-
-    <div class="form-group">
-      <label for="id_full_name">Full Name</label>
-      {{ form.full_name }} {% if form.full_name.errors %}
-      <div class="field-error">{{ form.full_name.errors.0 }}</div>
+  <div class="auth-container">
+    <form method="post" id="signupForm" class="auth-form">
+      {% csrf_token %}
+      <h2>Sign Up</h2>
+      {% if form.errors %}
+        <div class="message error">
+          {% for field, errors in form.errors.items %}
+            {% for error in errors %}<p>{{ error }}</p>{% endfor %}
+          {% endfor %}
+        </div>
       {% endif %}
-    </div>
-
-    <div class="form-group">
-      <label for="id_email">Email</label>
-      {{ form.email }} {% if form.email.errors %}
-      <div class="field-error">{{ form.email.errors.0 }}</div>
-      {% endif %}
-    </div>
-
-    <div class="form-group">
-      <label for="id_username">Username</label>
-      {{ form.username }} {% if form.username.errors %}
-      <div class="field-error">{{ form.username.errors.0 }}</div>
-      {% endif %}
-    </div>
-
-    <div class="form-group">
-      <label for="id_role">Role</label>
-      {{ form.role }} {% if form.role.errors %}
-      <div class="field-error">{{ form.role.errors.0 }}</div>
-      {% endif %}
-    </div>
-
-    <div class="form-group">
-      <label for="id_password1">Password</label>
-      {{ form.password1 }} {% if form.password1.errors %}
-      <div class="field-error">{{ form.password1.errors.0 }}</div>
-      {% endif %}
-    </div>
-
-    <div class="form-group">
-      <label for="id_password2">Confirm Password</label>
-      {{ form.password2 }} {% if form.password2.errors %}
-      <div class="field-error">{{ form.password2.errors.0 }}</div>
-      {% endif %}
-    </div>
-
-    <button type="submit">Sign Up</button>
-    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
-  </form>
-</div>
+      <div class="form-group">
+        <label for="id_full_name">Full Name</label>
+        {{ form.full_name }}
+        {% if form.full_name.errors %}<div class="field-error">{{ form.full_name.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="id_email">Email</label>
+        {{ form.email }}
+        {% if form.email.errors %}<div class="field-error">{{ form.email.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="id_username">Username</label>
+        {{ form.username }}
+        {% if form.username.errors %}<div class="field-error">{{ form.username.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="id_role">Role</label>
+        {{ form.role }}
+        {% if form.role.errors %}<div class="field-error">{{ form.role.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="id_password1">Password</label>
+        {{ form.password1 }}
+        {% if form.password1.errors %}<div class="field-error">{{ form.password1.errors.0 }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label for="id_password2">Confirm Password</label>
+        {{ form.password2 }}
+        {% if form.password2.errors %}<div class="field-error">{{ form.password2.errors.0 }}</div>{% endif %}
+      </div>
+      <button type="submit">Sign Up</button>
+      <p>
+        Already have an account? <a href="{% url 'login' %}">Login</a>
+      </p>
+    </form>
+  </div>
 {% endblock %}

@@ -1,46 +1,45 @@
 {% extends 'base.html' %}
-
 <!-- title -->
 {% block title %}Job Portal - Login{% endblock %}
-
 <!-- content -->
 {% block content %}
-<div class="login-page">
-  <div class="login-container">
-    <div class="login-header">
-      <h2>Welcome Back</h2>
-      <p>Login to access your account</p>
-    </div>
-    <form method="post" action="{% url 'login' %}">
-      {% csrf_token %}
-      <div class="form-group">
-        <label for="id_username">Email</label>
-        {{ form.username }}
+  <div class="login-page">
+    <div class="login-container">
+      <div class="login-header">
+        <h2>Welcome Back</h2>
+        <p>Login to access your account</p>
       </div>
-      <div class="form-group">
-        <label for="id_password">Password</label>
-        {{ form.password }}
+      <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        <div class="form-group">
+          <label for="id_username">Email</label>
+          {{ form.username }}
+        </div>
+        <div class="form-group">
+          <label for="id_password">Password</label>
+          {{ form.password }}
+        </div>
+        {% if form.errors %}
+          <div class="error-message">
+            {% for field, errors in form.errors.items %}
+              {% for error in errors %}{{ error }}{% endfor %}
+            {% endfor %}
+            {% if form.non_field_errors %}
+              <!-- non field errors -->
+              {% for error in form.non_field_errors %}
+                {{ error }}
+                <!-- end non field errors -->
+              {% endfor %}
+            {% endif %}
+            <!-- end non field errors -->
+          </div>
+        {% endif %}
+        <button type="submit" class="submit-btn">Login</button>
+      </form>
+      <div class="signup-section">
+        <p>Don't have an account?</p>
+        <a href="{% url 'signup' %}" class="signup-btn">Sign Up</a>
       </div>
-
-      {% if form.errors %}
-      <div class="error-message">
-        {% for field, errors in form.errors.items %} {% for error in errors %}
-        {{ error }} {% endfor %} {% endfor %} {% if form.non_field_errors %}
-
-        <!-- non field errors -->
-        {% for error in form.non_field_errors %} {{ error }}
-        <!-- end non field errors -->
-        {% endfor %} {%endif %}
-        <!-- end non field errors -->
-      </div>
-      {% endif %}
-
-      <button type="submit" class="submit-btn">Login</button>
-    </form>
-    <div class="signup-section">
-      <p>Don't have an account?</p>
-      <a href="{% url 'signup' %}" class="signup-btn">Sign Up</a>
     </div>
   </div>
-</div>
 {% endblock %}
