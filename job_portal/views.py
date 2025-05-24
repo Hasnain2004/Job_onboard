@@ -20,11 +20,6 @@ def signup_view(request):
     else:
         form = SignupForm()
     return render(request, 'signup.html', {'form': form})
-def login_view(request):
-    if request.user.is_authenticated:
-        return render(request, 'login.html')
-    return render(request, 'login.html')
-
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -39,10 +34,17 @@ def login_view(request):
             return redirect('job_list')
     else:
         form = LoginForm()
+    
+    # Check if user came from social auth
+    social_error = request.session.pop('social_auth_error', None)
+    if social_error:
+        messages.error(request, social_error)
+        
     return render(request, 'login.html', {'form': form})
 
 def logout_view(request):
     logout(request)
+    messages.success(request, "You have been successfully logged out.")
     return redirect('login')
 
 @login_required
@@ -408,3 +410,24 @@ def support_tickets(request):
         'tickets': tickets,
         'status_filter': status_filter
     })
+
+def handle_auth_callback(request):
+    """
+    Handle OAuth callbacks and errors
+    """
+    # Check for error in the request
+    if 'error' in request.GET:
+        error = request.GET.get('error')
+        error_description = request.GET.get('error_description', 'Authentication failed')
+        
+        # Store error in session to display it on login page
+        request.session['social_auth_error'] = f"Google login failed: {error_description}"
+        return redirect('login')
+    
+    # Successful authentication should be handled by social_django
+    # This is just a fallback redirect
+    if request.user.is_authenticated:
+        messages.success(request, f"Welcome, {request.user.full_name}! You've successfully signed in with Google.")
+        return redirect('job_list')
+    else:
+        return redirect('login')

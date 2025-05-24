@@ -31,7 +31,7 @@
                    id="searchBar"
                    placeholder="Search for jobs..."
                    {% if request.GET.search %}value="{{ request.GET.search }}"{% endif %}>
-            <button onclick="window.location.href='{% url 'job_list' %}?search=' + document.getElementById('searchBar').value;">
+            <button onclick="searchJobs()">
               <i class="fas fa-search"></i>
             </button>
           </div>
@@ -71,6 +71,12 @@
         <p>© {% now "Y" %} Job Portal. All rights reserved.</p>
       </div>
     </footer>
-    {% block extra_js %}{% endblock %}
+    {% block extra_js %}
+      <script>
+    function searchJobs() {
+      window.location.href = '{% url 'job_list' %}?search=' + document.getElementById('searchBar').value;
+    }
+      </script>
+    {% endblock %}
   </body>
 </html>
